@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тест на психотип Менеос — узнайте свой тип личности</title>
+    <title>Тест на психотип — узнайте свой тип личности</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .question-card {
@@ -56,8 +56,8 @@
             <div class="flex items-center gap-4">
                 <span class="text-4xl">🧠</span>
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Тест на психотип Менеос</h1>
-                    <p class="text-gray-600 mt-1">Определите свой ведущий тип характера по системе Менеос</p>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Тест на психотип</h1>
+                    <p class="text-gray-600 mt-1">Определите свой ведущий тип характера по системе Мак-Вильямс</p>
                 </div>
             </div>
             <div class="mt-4 flex flex-wrap gap-2 text-sm text-gray-500">
@@ -224,67 +224,85 @@
         // Описания типов
         const typeDescriptions = {
             'Параноидный': {
-                emoji: '🛡️',
+                emoji: '🔍',
                 short: 'Бдительный и проницательный',
                 desc: 'Вы обладаете острым чутьём на скрытые мотивы и нестандартные ситуации. Ваша бдительность помогает вам избегать ловушек, но иногда может создавать напряжение в отношениях. Вы цените честность и прямолинейность, хотя сами не всегда спешите раскрывать карты.',
                 strengths: 'Проницательность, внимание к деталям, интуиция',
-                weaknesses: 'Излишняя подозрительность, трудности с доверием'
+                weaknesses: 'Излишняя подозрительность, трудности с доверием',
+                traits: ['Бдительность', 'Проницательность', 'Настороженность', 'Внимание к деталям'],
+                barColor: 'linear-gradient(90deg, #ef4444, #f97316)'
             },
             'Обсессивно-компульсивный': {
                 emoji: '📋',
                 short: 'Организованный и ответственный',
                 desc: 'Вы цените порядок, планирование и предсказуемость. Ваша жизнь подчинена расписанию и правилам, которые помогают вам чувствовать себя в безопасности. Вы надёжный человек, на которого можно положиться в любой ситуации.',
                 strengths: 'Ответственность, дисциплина, надёжность',
-                weaknesses: 'Склонность к перфекционизму, ригидность'
+                weaknesses: 'Склонность к перфекционизму, ригидность',
+                traits: ['Ответственность', 'Дисциплина', 'Надёжность', 'Перфекционизм'],
+                barColor: 'linear-gradient(90deg, #22c55e, #16a34a)'
             },
             'Шизоидный': {
-                emoji: '🌌',
+                emoji: '🌙',
                 short: 'Самодостаточный и глубокий',
                 desc: 'Вы предпочитаете уединение и внутренний мир внешней суете. Ваши мысли и фантазии часто богаче реальности. Вы не нуждаетесь в постоянном общении и цените свободу, но иногда можете казаться отстранённым.',
                 strengths: 'Креативность, самодостаточность, глубина мышления',
-                weaknesses: 'Социальная изоляция, трудности в выражении эмоций'
+                weaknesses: 'Социальная изоляция, трудности в выражении эмоций',
+                traits: ['Самодостаточность', 'Глубина мышления', 'Независимость', 'Богатое воображение'],
+                barColor: 'linear-gradient(90deg, #a855f7, #ec4899)'
             },
             'Депрессивный': {
-                emoji: '🌧️',
+                emoji: '💙',
                 short: 'Эмпатичный и самокритичный',
                 desc: 'Вы склонны к глубоким переживаниям и самоанализу. Ваша самокритика помогает вам расти, но иногда может приводить к заниженной самооценке. Вы очень чувствительны к эмоциям других и часто ставите их потребности выше своих.',
                 strengths: 'Эмпатия, ответственность, глубина чувств',
-                weaknesses: 'Склонность к самокритике, чувство вины'
+                weaknesses: 'Склонность к самокритике, чувство вины',
+                traits: ['Эмпатия', 'Самокритичность', 'Ответственность', 'Глубина чувств'],
+                barColor: 'linear-gradient(90deg, #3b82f6, #6366f1)'
             },
             'Истерический': {
                 emoji: '🎭',
                 short: 'Эмоциональный и выразительный',
                 desc: 'Вы обладаете яркой эмоциональностью и харизмой. Вас привлекает внимание, и вы умеете его привлекать. Ваша экспрессивность и артистизм делают вас душой компании, хотя иногда могут восприниматься как излишняя театральность.',
                 strengths: 'Харизма, эмоциональный интеллект, артистизм',
-                weaknesses: 'Потребность во внимании, поверхностность'
+                weaknesses: 'Потребность во внимании, поверхностность',
+                traits: ['Харизма', 'Экспрессивность', 'Артистизм', 'Потребность во внимании'],
+                barColor: 'linear-gradient(90deg, #ec4899, #db2777)'
             },
             'Нарциссический': {
                 emoji: '⭐',
-                short: 'Целеустремлённый и амбициозный',
+                short: 'Фокус на достижениях и признании',
                 desc: 'Вы ориентированы на успех, признание и достижения. Ваша самооценка тесно связана с внешними подтверждениями вашей значимости. Вы умеете ставить цели и достигать их, но критику воспринимаете болезненно.',
                 strengths: 'Лидерство, амбициозность, целеустремлённость',
-                weaknesses: 'Уязвимость к критике, зависимость от похвалы'
+                weaknesses: 'Уязвимость к критике, зависимость от похвалы',
+                traits: ['Амбициозность', 'Потребность в признании', 'Уверенность', 'Конкурентность'],
+                barColor: 'linear-gradient(90deg, #f59e0b, #ea580c)'
             },
             'Антисоциальный': {
                 emoji: '⚡',
                 short: 'Независимый и свободолюбивый',
                 desc: 'Вы не признаёте авторитетов и правил, которые кажутся вам бессмысленными. Вы действуете по своим правилам и редко испытываете угрызения совести. Ваша свобода и независимость — главные ценности, даже если это идёт вразрез с общепринятыми нормами.',
                 strengths: 'Самостоятельность, смелость, свобода мышления',
-                weaknesses: 'Импульсивность, пренебрежение правилами'
+                weaknesses: 'Импульсивность, пренебрежение правилами',
+                traits: ['Независимость', 'Смелость', 'Свобода мышления', 'Импульсивность'],
+                barColor: 'linear-gradient(90deg, #facc15, #f59e0b)'
             },
             'Мазохистический': {
-                emoji: '💪',
+                emoji: '🎭',
                 short: 'Выносливый и преданный',
                 desc: 'Вы готовы терпеть неудобства и трудности ради других или ради достижения цели. Ваша выносливость и способность к самопожертвованию вызывают уважение, но иногда вы позволяете другим использовать вашу доброту.',
                 strengths: 'Выносливость, преданность, терпение',
-                weaknesses: 'Склонность к самопожертвованию, виктимность'
+                weaknesses: 'Склонность к самопожертвованию, виктимность',
+                traits: ['Выносливость', 'Преданность', 'Терпение', 'Самопожертвование'],
+                barColor: 'linear-gradient(90deg, #64748b, #475569)'
             },
             'Маниакальный': {
                 emoji: '🔥',
                 short: 'Энергичный и жизнерадостный',
                 desc: 'Вы полны энергии, идей и энтузиазма. Ваша жизнь — это постоянное движение и новые проекты. Вы избегаете грустных мыслей и предпочитаете фокусироваться на позитиве, но иногда ваша активность может переходить в хаос.',
                 strengths: 'Энергичность, креативность, оптимизм',
-                weaknesses: 'Неустойчивость, трудности с концентрацией'
+                weaknesses: 'Неустойчивость, трудности с концентрацией',
+                traits: ['Энергичность', 'Оптимизм', 'Инициативность', 'Импульсивность'],
+                barColor: 'linear-gradient(90deg, #fb923c, #ef4444)'
             }
         };
 
@@ -406,19 +424,22 @@
 
             for (const type in scores) {
                 const score = scores[type];
-                allScores.push({ type, score });
+                const total = typeMapping[type].length;
+                const percent = Math.round((score / total) * 100);
+                allScores.push({ type, score, total, percent });
                 if (score > maxScore) {
                     maxScore = score;
                     leadingType = type;
                 }
             }
 
-            allScores.sort((a, b) => b.score - a.score);
+            // Сортируем по проценту, затем по количеству баллов
+            allScores.sort((a, b) => b.percent - a.percent || b.score - a.score);
 
             return {
                 leadingType,
                 maxScore,
-                allScores: allScores.filter(s => s.score > 0),
+                allScores,
                 scores
             };
         }
@@ -444,27 +465,57 @@
             }
 
             const typeInfo = typeDescriptions[results.leadingType];
-            const allTypesHtml = results.allScores.map(({ type, score }) => {
-                const info = typeDescriptions[type];
-                return `<span class="type-tag" style="background: ${score === results.maxScore ? '#e0e7ff' : '#f3f4f6'}; color: ${score === results.maxScore ? '#4f46e5' : '#6b7280'}">
-                    ${info?.emoji || ''} ${type} (${score})
-                </span>`;
-            }).join('');
 
-            content.innerHTML = `
-                <div class="result-card bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-6 md:p-8 border border-indigo-200">
-                    <div class="flex items-start gap-4 flex-wrap">
-                        <span class="text-6xl">${typeInfo?.emoji || '🧠'}</span>
-                        <div class="flex-1">
-                            <h3 class="text-2xl font-bold text-gray-900">${results.leadingType}</h3>
-                            <p class="text-indigo-600 font-medium">${typeInfo?.short || ''}</p>
+            // Визуальная таблица результатов (профиль личности) — шкалы по каждому типу
+            const profileBarsHtml = results.allScores.map(({ type, percent }) => {
+                const info = typeDescriptions[type];
+                return `
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-gray-800 font-medium flex items-center gap-2">
+                                <span>${info?.emoji || '🔹'}</span> ${type}
+                            </span>
+                            <span class="text-gray-800 font-semibold">${percent}%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-2.5">
+                            <div class="h-2.5 rounded-full" style="width: ${percent}%; background: ${info?.barColor || 'linear-gradient(90deg, #6366f1, #4f46e5)'}"></div>
                         </div>
                     </div>
+                `;
+            }).join('');
 
-                    <div class="mt-4 p-4 bg-white/60 rounded-xl">
-                        <p class="text-gray-700 leading-relaxed">${typeInfo?.desc || 'Описание отсутствует'}</p>
+            const traitsHtml = (typeInfo?.traits || []).map(t => `
+                <li class="flex items-center gap-2 text-gray-700">
+                    <span class="w-2 h-2 rounded-full bg-indigo-500 shrink-0"></span> ${t}
+                </li>
+            `).join('');
+
+            content.innerHTML = `
+                <div class="result-card text-center">
+                    <span class="text-6xl">⭐</span>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-3">Ваш доминирующий психотип</h3>
+                    <div class="mt-3 inline-block">
+                        <span class="type-tag text-lg" style="background: ${typeInfo?.barColor || 'linear-gradient(90deg, #6366f1, #4f46e5)'}; color: white; padding: 8px 24px;">
+                            ${results.leadingType}
+                        </span>
                     </div>
+                    <p class="text-gray-500 mt-2">${typeInfo?.short || ''}</p>
+                </div>
 
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 mt-6">
+                    <h4 class="font-semibold text-gray-900 mb-4 flex items-center gap-2">📈 Профиль личности</h4>
+                    ${profileBarsHtml}
+                </div>
+
+                <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border border-indigo-200 p-6 mt-6">
+                    <h4 class="font-semibold text-gray-900 mb-4 flex items-center gap-2">🧩 Основные характеристики</h4>
+                    <ul class="space-y-2">
+                        ${traitsHtml}
+                    </ul>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 mt-6">
+                    <p class="text-gray-700 leading-relaxed">${typeInfo?.desc || ''}</p>
                     <div class="grid md:grid-cols-2 gap-4 mt-4">
                         <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
                             <h4 class="font-semibold text-emerald-800 text-sm uppercase tracking-wide">💪 Сильные стороны</h4>
@@ -474,14 +525,6 @@
                             <h4 class="font-semibold text-rose-800 text-sm uppercase tracking-wide">📌 Зоны роста</h4>
                             <p class="text-gray-700 mt-1">${typeInfo?.weaknesses || ''}</p>
                         </div>
-                    </div>
-
-                    <div class="mt-4 p-4 bg-white/60 rounded-xl">
-                        <h4 class="font-semibold text-gray-700 text-sm uppercase tracking-wide mb-2">📊 Ваш профиль</h4>
-                        <div class="flex flex-wrap gap-1">
-                            ${allTypesHtml}
-                        </div>
-                        <p class="text-xs text-gray-500 mt-2">* Цифра — количество ваших ответов "часто" или "очень точно" для каждого типа</p>
                     </div>
                 </div>
             `;
