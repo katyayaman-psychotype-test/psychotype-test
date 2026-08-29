@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест на психотип Менеос — узнайте свой тип личности</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .question-card {
+            transition: all 0.3s ease;
+        }
+        .question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.1);
+        }
+        .option-btn {
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        .option-btn:hover {
+            border-color: #818cf8;
+            background: #eef2ff;
+        }
+        .option-btn.selected {
+            border-color: #4f46e5;
+            background: #e0e7ff;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        .result-card {
+            animation: fadeInUp 0.6s ease;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .type-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 3px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+
+    <!-- Основная обертка -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+
+        <!-- Шапка -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="flex items-center gap-4">
+                <span class="text-4xl">🧠</span>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Тест на психотип Менеос</h1>
+                    <p class="text-gray-600 mt-1">Определите свой ведущий тип характера по системе Менеос</p>
+                </div>
+            </div>
+            <div class="mt-4 flex flex-wrap gap-2 text-sm text-gray-500">
+                <span class="bg-gray-100 px-3 py-1 rounded-full">📝 25 вопросов</span>
+                <span class="bg-gray-100 px-3 py-1 rounded-full">⏱ 5–7 минут</span>
+                <span class="bg-gray-100 px-3 py-1 rounded-full">🔒 Анонимно</span>
+            </div>
+        </div>
+
+        <!-- Контейнер теста -->
+        <div id="test-container" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
+
+            <!-- Прогресс -->
+            <div id="progress-section" class="mb-6">
+                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                    <span id="question-counter">Вопрос 1 из 25</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div id="progress-bar" class="progress-bar bg-gradient-to-r from-indigo-500 to-purple-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Вопрос -->
+            <div id="question-section">
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 mb-6">
+                    <p id="question-text" class="text-lg md:text-xl font-medium text-gray-900">Загрузка вопроса...</p>
+                </div>
+
+                <div id="options-container" class="space-y-3">
+                    <!-- Кнопки будут сгенерированы JS -->
+                </div>
+
+                <div class="flex justify-between items-center mt-8 pt-4 border-t border-gray-200">
+                    <button id="prev-btn" class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
+                        ← Назад
+                    </button>
+                    <button id="reset-btn" class="px-5 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 transition text-sm">
+                        🔄 Начать заново
+                    </button>
+                    <button id="next-btn" class="px-6 py-2.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition">
+                        Далее →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Результаты (изначально скрыты) -->
+            <div id="results-section" class="hidden">
+                <div class="text-center mb-6">
+                    <span class="text-5xl">🎉</span>
+                    <h2 class="text-2xl font-bold text-gray-900 mt-3">Ваш профиль психотипа</h2>
+                    <p class="text-gray-600">На основе ваших ответов определён ведущий тип характера</p>
+                </div>
+
+                <div id="results-content" class="space-y-6">
+                    <!-- Результаты будут вставлены JS -->
+                </div>
+
+                <div class="mt-8 text-center">
+                    <button id="retake-btn" class="px-8 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-200">
+                        Пройти заново
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Информационная секция -->
+        <div class="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <h3 class="font-semibold text-gray-900 mb-3">📖 Как интерпретировать результат</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">
+                Ваш ведущий тип показывает, какие черты характера доминируют в вашем поведении. 
+                Помните, что в каждом человеке сочетаются черты разных типов — результат показывает лишь 
+                наиболее выраженные тенденции. Используйте это знание для лучшего понимания себя 
+                и своего взаимодействия с миром.
+            </p>
+        </div>
+
+        <!-- Часто задаваемые вопросы -->
+        <div class="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <h3 class="font-semibold text-gray-900 mb-4">❓ Часто задаваемые вопросы</h3>
+            <div class="space-y-3">
+                <details class="border rounded-lg">
+                    <summary class="px-4 py-3 font-medium cursor-pointer hover:bg-gray-50 transition-colors list-none flex items-center justify-between">
+                        Насколько точен этот тест?
+                        <svg class="w-4 h-4 text-gray-500 shrink-0 ml-2 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </summary>
+                    <div class="px-4 pb-3 text-gray-600 text-sm border-t border-gray-100 pt-3">
+                        Тест даёт ориентировочный результат и основан на психоаналитической типологии. Для точной диагностики рекомендуется обращаться к профессиональному психологу.
+                    </div>
+                </details>
+                <details class="border rounded-lg">
+                    <summary class="px-4 py-3 font-medium cursor-pointer hover:bg-gray-50 transition-colors list-none flex items-center justify-between">
+                        Может ли психотип меняться с возрастом?
+                        <svg class="w-4 h-4 text-gray-500 shrink-0 ml-2 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </summary>
+                    <div class="px-4 pb-3 text-gray-600 text-sm border-t border-gray-100 pt-3">
+                        Ядро характера остаётся стабильным, но отдельные черты могут смягчаться или усиливаться с опытом и осознанной работой над собой.
+                    </div>
+                </details>
+                <details class="border rounded-lg">
+                    <summary class="px-4 py-3 font-medium cursor-pointer hover:bg-gray-50 transition-colors list-none flex items-center justify-between">
+                        Есть ли «лучший» или «худший» тип?
+                        <svg class="w-4 h-4 text-gray-500 shrink-0 ml-2 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </summary>
+                    <div class="px-4 pb-3 text-gray-600 text-sm border-t border-gray-100 pt-3">
+                        Нет. Каждый тип имеет свои сильные и слабые стороны. Важно понимать свои особенности и использовать их с пользой.
+                    </div>
+                </details>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ===================== ДАННЫЕ ТЕСТА =====================
+        const questions = [
+            { id: 1, text: 'Меня раздражает беспорядок и неопределённость, я люблю, когда всё под контролем.' },
+            { id: 2, text: 'Я часто замечаю, что люди могут иметь скрытые мотивы, и мне важно быть начеку.' },
+            { id: 3, text: 'После общения с людьми мне обязательно нужно побыть одному, чтобы восстановить силы.' },
+            { id: 4, text: 'Я часто чувствую, что недостаточно хорош(а) для чего-то или кого-то.' },
+            { id: 5, text: 'Когда я в центре внимания, я чувствую прилив энергии и оживаю.' },
+            { id: 6, text: 'Моё настроение и самооценка сильно зависят от успехов, признания или критики.' },
+            { id: 7, text: 'Правила созданы для того, чтобы их иногда нарушать, если это помогает достичь цели.' },
+            { id: 8, text: 'Я способен(на) долго терпеть неудобства, и иногда это даже даёт мне чувство морального превосходства.' },
+            { id: 9, text: 'Мне трудно усидеть на месте, я постоянно нахожусь в движении или придумываю новые дела.' },
+            { id: 10, text: 'Мои внутренние мысли и фантазии часто интереснее, чем события вокруг.' },
+            { id: 11, text: 'Я составляю списки, планирую дела и следую распорядку — это помогает мне чувствовать себя спокойно.' },
+            { id: 12, text: 'Мне трудно доверять людям с первого раза, я сначала проверяю их надёжность.' },
+            { id: 13, text: 'Комплименты смущают меня, мне проще принять конструктивную критику, чем похвалу.' },
+            { id: 14, text: 'Я выражаю эмоции ярко — жестами, мимикой, иногда это выглядит немного театрально.' },
+            { id: 15, text: 'Критика ранит меня очень глубоко и надолго, я могу долго переживать из-за неё.' },
+            { id: 16, text: 'Я редко испытываю угрызения совести или чувство вины за свои поступки.' },
+            { id: 17, text: 'Окружающие говорят, что я сам(а) виноват(а) в своих проблемах, но я с этим не согласен(на).' },
+            { id: 18, text: 'Я стараюсь избегать грустных мыслей, предпочитая сосредотачиваться на позитивном или отвлекаться на активность.' },
+            { id: 19, text: 'Для меня очень важно быть ответственным(ой) и выполнять свои обязательства.' },
+            { id: 20, text: 'В конфликтах я часто чувствую, что со мной поступают несправедливо.' },
+            { id: 21, text: 'Близкие отношения иногда ощущаются как посягательство на мою свободу и личное пространство.' },
+            { id: 22, text: 'Когда что-то идёт не так, моя первая мысль: «Что я сделал(а) не так?»' },
+            { id: 23, text: 'Я умею произвести нужное впечатление, когда этого требует ситуация.' },
+            { id: 24, text: 'Я часто сравниваю себя с другими — их достижениями, статусом, внешностью.' },
+            { id: 25, text: 'Мне нравится риск и необходимость быстро ориентироваться в сложных ситуациях.' }
+        ];
+
+        // Маппинг вопросов к типам (индексы начинаются с 0)
+        const typeMapping = {
+            'Параноидный': [1, 11, 19],
+            'Обсессивно-компульсивный': [0, 10, 18],
+            'Шизоидный': [2, 9, 20],
+            'Депрессивный': [3, 12, 21],
+            'Истерический': [4, 13, 22],
+            'Нарциссический': [5, 14, 23],
+            'Антисоциальный': [6, 15, 24],
+            'Мазохистический': [7, 16],
+            'Маниакальный': [8, 17]
+        };
+
+        // Описания типов
+        const typeDescriptions = {
+            'Параноидный': {
+                emoji: '🛡️',
+                short: 'Бдительный и проницательный',
+                desc: 'Вы обладаете острым чутьём на скрытые мотивы и нестандартные ситуации. Ваша бдительность помогает вам избегать ловушек, но иногда может создавать напряжение в отношениях. Вы цените честность и прямолинейность, хотя сами не всегда спешите раскрывать карты.',
+                strengths: 'Проницательность, внимание к деталям, интуиция',
+                weaknesses: 'Излишняя подозрительность, трудности с доверием'
+            },
+            'Обсессивно-компульсивный': {
+                emoji: '📋',
+                short: 'Организованный и ответственный',
+                desc: 'Вы цените порядок, планирование и предсказуемость. Ваша жизнь подчинена расписанию и правилам, которые помогают вам чувствовать себя в безопасности. Вы надёжный человек, на которого можно положиться в любой ситуации.',
+                strengths: 'Ответственность, дисциплина, надёжность',
+                weaknesses: 'Склонность к перфекционизму, ригидность'
+            },
+            'Шизоидный': {
+                emoji: '🌌',
+                short: 'Самодостаточный и глубокий',
+                desc: 'Вы предпочитаете уединение и внутренний мир внешней суете. Ваши мысли и фантазии часто богаче реальности. Вы не нуждаетесь в постоянном общении и цените свободу, но иногда можете казаться отстранённым.',
+                strengths: 'Креативность, самодостаточность, глубина мышления',
+                weaknesses: 'Социальная изоляция, трудности в выражении эмоций'
+            },
+            'Депрессивный': {
+                emoji: '🌧️',
+                short: 'Эмпатичный и самокритичный',
+                desc: 'Вы склонны к глубоким переживаниям и самоанализу. Ваша самокритика помогает вам расти, но иногда может приводить к заниженной самооценке. Вы очень чувствительны к эмоциям других и часто ставите их потребности выше своих.',
+                strengths: 'Эмпатия, ответственность, глубина чувств',
+                weaknesses: 'Склонность к самокритике, чувство вины'
+            },
+            'Истерический': {
+                emoji: '🎭',
+                short: 'Эмоциональный и выразительный',
+                desc: 'Вы обладаете яркой эмоциональностью и харизмой. Вас привлекает внимание, и вы умеете его привлекать. Ваша экспрессивность и артистизм делают вас душой компании, хотя иногда могут восприниматься как излишняя театральность.',
+                strengths: 'Харизма, эмоциональный интеллект, артистизм',
+                weaknesses: 'Потребность во внимании, поверхностность'
+            },
+            'Нарциссический': {
+                emoji: '⭐',
+                short: 'Целеустремлённый и амбициозный',
+                desc: 'Вы ориентированы на успех, признание и достижения. Ваша самооценка тесно связана с внешними подтверждениями вашей значимости. Вы умеете ставить цели и достигать их, но критику воспринимаете болезненно.',
+                strengths: 'Лидерство, амбициозность, целеустремлённость',
+                weaknesses: 'Уязвимость к критике, зависимость от похвалы'
+            },
+            'Антисоциальный': {
+                emoji: '⚡',
+                short: 'Независимый и свободолюбивый',
+                desc: 'Вы не признаёте авторитетов и правил, которые кажутся вам бессмысленными. Вы действуете по своим правилам и редко испытываете угрызения совести. Ваша свобода и независимость — главные ценности, даже если это идёт вразрез с общепринятыми нормами.',
+                strengths: 'Самостоятельность, смелость, свобода мышления',
+                weaknesses: 'Импульсивность, пренебрежение правилами'
+            },
+            'Мазохистический': {
+                emoji: '💪',
+                short: 'Выносливый и преданный',
+                desc: 'Вы готовы терпеть неудобства и трудности ради других или ради достижения цели. Ваша выносливость и способность к самопожертвованию вызывают уважение, но иногда вы позволяете другим использовать вашу доброту.',
+                strengths: 'Выносливость, преданность, терпение',
+                weaknesses: 'Склонность к самопожертвованию, виктимность'
+            },
+            'Маниакальный': {
+                emoji: '🔥',
+                short: 'Энергичный и жизнерадостный',
+                desc: 'Вы полны энергии, идей и энтузиазма. Ваша жизнь — это постоянное движение и новые проекты. Вы избегаете грустных мыслей и предпочитаете фокусироваться на позитиве, но иногда ваша активность может переходить в хаос.',
+                strengths: 'Энергичность, креативность, оптимизм',
+                weaknesses: 'Неустойчивость, трудности с концентрацией'
+            }
+        };
+
+        // ===================== СОСТОЯНИЕ ТЕСТА =====================
+        let state = {
+            currentQuestion: 0,
+            answers: new Array(questions.length).fill(null),
+            isComplete: false
+        };
+
+        // ===================== DOM ЭЛЕМЕНТЫ =====================
+        const questionSection = document.getElementById('question-section');
+        const resultsSection = document.getElementById('results-section');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercent = document.getElementById('progress-percent');
+        const questionCounter = document.getElementById('question-counter');
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const retakeBtn = document.getElementById('retake-btn');
+
+        // ===================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====================
+        function getOptionLabel(index) {
+            return ['Совсем не про меня', 'Редко про меня', 'Иногда про меня', 'Часто про меня', 'Очень точно про меня'][index];
+        }
+
+        function getOptionColor(index) {
+            const colors = [
+                'from-red-50 to-red-100 hover:from-red-100 hover:to-red-200',
+                'from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200',
+                'from-yellow-50 to-yellow-100 hover:from-yellow-100 hover:to-yellow-200',
+                'from-green-50 to-green-100 hover:from-green-100 hover:to-green-200',
+                'from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200'
+            ];
+            return colors[index] || 'from-gray-50 to-gray-100';
+        }
+
+        function updateProgress() {
+            const total = questions.length;
+            const answered = state.answers.filter(a => a !== null).length;
+            const percent = Math.round((answered / total) * 100);
+            progressBar.style.width = percent + '%';
+            progressPercent.textContent = percent + '%';
+            questionCounter.textContent = `Вопрос ${state.currentQuestion + 1} из ${total}`;
+        }
+
+        function renderQuestion() {
+            if (state.isComplete) return;
+
+            const q = questions[state.currentQuestion];
+            questionText.textContent = q.text;
+
+            optionsContainer.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const btn = document.createElement('button');
+                btn.className = `option-btn w-full text-left p-4 rounded-xl bg-gradient-to-r ${getOptionColor(i)} transition-all ${state.answers[state.currentQuestion] === i ? 'selected' : ''}`;
+                btn.textContent = getOptionLabel(i);
+                btn.dataset.value = i;
+                btn.addEventListener('click', () => selectOption(i));
+                optionsContainer.appendChild(btn);
+            }
+
+            prevBtn.disabled = state.currentQuestion === 0;
+            nextBtn.textContent = state.currentQuestion === questions.length - 1 ? '📊 Узнать результат' : 'Далее →';
+            nextBtn.disabled = state.answers[state.currentQuestion] === null;
+
+            updateProgress();
+            questionSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function selectOption(value) {
+            state.answers[state.currentQuestion] = value;
+            renderQuestion();
+        }
+
+        function goToNext() {
+            if (state.answers[state.currentQuestion] === null) return;
+
+            if (state.currentQuestion === questions.length - 1) {
+                showResults();
+            } else {
+                state.currentQuestion++;
+                renderQuestion();
+            }
+        }
+
+        function goToPrev() {
+            if (state.currentQuestion > 0) {
+                state.currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        // ===================== РАСЧЁТ РЕЗУЛЬТАТОВ =====================
+        function calculateResults() {
+            const scores = {};
+
+            for (const type in typeMapping) {
+                scores[type] = 0;
+            }
+
+            for (let i = 0; i < state.answers.length; i++) {
+                const answer = state.answers[i];
+                if (answer === 3 || answer === 4) {
+                    for (const type in typeMapping) {
+                        if (typeMapping[type].includes(i)) {
+                            scores[type] = (scores[type] || 0) + 1;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            let maxScore = 0;
+            let leadingType = null;
+            let allScores = [];
+
+            for (const type in scores) {
+                const score = scores[type];
+                allScores.push({ type, score });
+                if (score > maxScore) {
+                    maxScore = score;
+                    leadingType = type;
+                }
+            }
+
+            allScores.sort((a, b) => b.score - a.score);
+
+            return {
+                leadingType,
+                maxScore,
+                allScores: allScores.filter(s => s.score > 0),
+                scores
+            };
+        }
+
+        function showResults() {
+            state.isComplete = true;
+            const results = calculateResults();
+
+            questionSection.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+
+            const content = document.getElementById('results-content');
+
+            if (!results.leadingType || results.maxScore === 0) {
+                content.innerHTML = `
+                    <div class="text-center py-8">
+                        <span class="text-4xl">🤔</span>
+                        <p class="text-gray-600 mt-3">Вы дали недостаточно чётких ответов (3–4 балла).</p>
+                        <p class="text-gray-500 text-sm">Попробуйте пройти тест ещё раз, отвечая более определённо.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const typeInfo = typeDescriptions[results.leadingType];
+            const allTypesHtml = results.allScores.map(({ type, score }) => {
+                const info = typeDescriptions[type];
+                return `<span class="type-tag" style="background: ${score === results.maxScore ? '#e0e7ff' : '#f3f4f6'}; color: ${score === results.maxScore ? '#4f46e5' : '#6b7280'}">
+                    ${info?.emoji || ''} ${type} (${score})
+                </span>`;
+            }).join('');
+
+            content.innerHTML = `
+                <div class="result-card bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-6 md:p-8 border border-indigo-200">
+                    <div class="flex items-start gap-4 flex-wrap">
+                        <span class="text-6xl">${typeInfo?.emoji || '🧠'}</span>
+                        <div class="flex-1">
+                            <h3 class="text-2xl font-bold text-gray-900">${results.leadingType}</h3>
+                            <p class="text-indigo-600 font-medium">${typeInfo?.short || ''}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-4 bg-white/60 rounded-xl">
+                        <p class="text-gray-700 leading-relaxed">${typeInfo?.desc || 'Описание отсутствует'}</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4 mt-4">
+                        <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
+                            <h4 class="font-semibold text-emerald-800 text-sm uppercase tracking-wide">💪 Сильные стороны</h4>
+                            <p class="text-gray-700 mt-1">${typeInfo?.strengths || ''}</p>
+                        </div>
+                        <div class="bg-rose-50 p-4 rounded-xl border border-rose-200">
+                            <h4 class="font-semibold text-rose-800 text-sm uppercase tracking-wide">📌 Зоны роста</h4>
+                            <p class="text-gray-700 mt-1">${typeInfo?.weaknesses || ''}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-4 bg-white/60 rounded-xl">
+                        <h4 class="font-semibold text-gray-700 text-sm uppercase tracking-wide mb-2">📊 Ваш профиль</h4>
+                        <div class="flex flex-wrap gap-1">
+                            ${allTypesHtml}
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">* Цифра — количество ваших ответов "часто" или "очень точно" для каждого типа</p>
+                    </div>
+                </div>
+            `;
+
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ===================== СБРОС =====================
+        function resetTest() {
+            state.currentQuestion = 0;
+            state.answers = new Array(questions.length).fill(null);
+            state.isComplete = false;
+
+            resultsSection.classList.add('hidden');
+            questionSection.classList.remove('hidden');
+
+            renderQuestion();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ===================== СОБЫТИЯ =====================
+        nextBtn.addEventListener('click', goToNext);
+        prevBtn.addEventListener('click', goToPrev);
+        resetBtn.addEventListener('click', resetTest);
+        retakeBtn.addEventListener('click', resetTest);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'Enter') {
+                if (!nextBtn.disabled) goToNext();
+            }
+            if (e.key === 'ArrowLeft') {
+                if (!prevBtn.disabled) goToPrev();
+            }
+        });
+
+        // ===================== ЗАПУСК =====================
+        renderQuestion();
+
+        console.log('🧠 Тест на психотип Менеос загружен!');
+        console.log('📝 Всего вопросов:', questions.length);
+        console.log('📊 Типов:', Object.keys(typeMapping).length);
+    </script>
+
+</body>
+</html>
