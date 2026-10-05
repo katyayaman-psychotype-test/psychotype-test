@@ -1,1 +1,599 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9 типов хорошей девочки</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .question-card {
+            transition: all 0.3s ease;
+        }
+        .question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.1);
+        }
+        .option-btn {
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        .option-btn:hover {
+            border-color: #818cf8;
+            background: #eef2ff;
+        }
+        .option-btn.selected {
+            border-color: #4f46e5;
+            background: #e0e7ff;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        .result-card {
+            animation: fadeInUp 0.6s ease;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .type-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 3px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+
+    <!-- Основная обертка -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+
+        <!-- Шапка -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="flex items-center gap-4">
+                <span class="text-4xl">🙋‍♀️</span>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">9 типов хорошей девочки</h1>
+                    <p class="text-gray-600 mt-1">Тест на ведущую защиту — для женщин, которые устали быть удобными.</p>
+                </div>
+            </div>
+            <div class="mt-4 flex flex-wrap gap-2 text-sm text-gray-500">
+                <span class="bg-gray-100 px-3 py-1 rounded-full">📝 25 вопросов</span>
+                <span class="bg-gray-100 px-3 py-1 rounded-full">⏱ 5–7 минут</span>
+                <span class="bg-gray-100 px-3 py-1 rounded-full">🔒 Анонимно</span>
+                <span class="bg-gray-100 px-3 py-1 rounded-full">🎁 Разбор в конце</span>
+            </div>
+        </div>
+
+        <!-- Контейнер теста -->
+        <div id="test-container" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
+
+            <!-- Прогресс -->
+            <div id="progress-section" class="mb-6">
+                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                    <span id="question-counter">Вопрос 1 из 25</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div id="progress-bar" class="progress-bar bg-gradient-to-r from-indigo-500 to-purple-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Вопрос -->
+            <div id="question-section">
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 mb-6">
+                    <p id="question-text" class="text-lg md:text-xl font-medium text-gray-900">Загрузка вопроса...</p>
+                </div>
+
+                <div id="options-container" class="space-y-3">
+                    <!-- Кнопки будут сгенерированы JS -->
+                </div>
+
+                <div class="flex justify-between items-center mt-8 pt-4 border-t border-gray-200">
+                    <button id="prev-btn" class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
+                        ← Назад
+                    </button>
+                    <button id="reset-btn" class="px-5 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 transition text-sm">
+                        🔄 Начать заново
+                    </button>
+                    <button id="next-btn" class="px-6 py-2.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition">
+                        Далее →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Результаты (изначально скрыты) -->
+            <div id="results-section" class="hidden">
+                <div class="text-center mb-6">
+                    <span class="text-5xl">🎉</span>
+                    <h2 class="text-2xl font-bold text-gray-900 mt-3">Твой результат готов</h2>
+                </div>
+
+                <div id="results-content" class="space-y-6">
+                    <!-- Результаты будут вставлены JS -->
+                </div>
+
+                <div class="mt-8 text-center">
+                    <button id="retake-btn" class="px-8 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-200">
+                        Пройти заново
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Как читать свой результат -->
+        <div class="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <h3 class="font-semibold text-gray-900 mb-3">📖 Как читать свой результат</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">
+                Твой тип — это не приговор и не ярлык. Это защита, которая когда-то тебя спасла.
+                В тебе есть черты разных типов — результат показывает лишь те, что сейчас звучат громче всего.
+                Это не «кто ты есть», а «как ты привыкла защищаться».<br><br>
+                И самое важное: это можно менять. Ты не обязана всю жизнь быть удобной, терпеливой или правильной.
+            </p>
+        </div>
+
+        <!-- Часто задаваемые вопросы -->
+        <div class="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <h3 class="font-semibold text-gray-900 mb-4">❓ Частые вопросы</h3>
+            <div class="space-y-3">
+                <details class="border rounded-lg">
+                    <summary class="px-4 py-3 font-medium cursor-pointer hover:bg-gray-50 transition-colors list-none flex items-center justify-between">
+                        Это диагноз?
+                        <svg class="w-4 h-4 text-gray-500 shrink-0 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </summary>
+                    <div class="px-4 pb-3 text-gray-600 text-sm border-t border-gray-100 pt-3">
+                        Нет. Это не диагноз и не ярлык. Твой тип — это способ, которым ты когда-то научилась защищаться от боли. Он когда-то тебя спасал, а сейчас может мешать. Это можно менять.
+                    </div>
+                </details>
+                <details class="border rounded-lg">
+                    <summary class="px-4 py-3 font-medium cursor-pointer hover:bg-gray-50 transition-colors list-none flex items-center justify-between">
+                        Почему у меня несколько типов?
+                        <svg class="w-4 h-4 text-gray-500 shrink-0 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </summary>
+                    <div class="px-4 pb-3 text-gray-600 text-sm border-t border-gray-100 pt-3">
+                        Потому что ты — живая. В каждом человеке сочетаются разные защиты: где-то сильнее, где-то слабее. Результат показывает лишь то, что звучит громче всего прямо сейчас. Это не «кто ты есть», а «как ты привыкла защищаться».
+                    </div>
+                </details>
+                <details class="border rounded-lg">
+                    <summary class="px-4 py-3 font-medium cursor-pointer hover:bg-gray-50 transition-colors list-none flex items-center justify-between">
+                        Это точно про меня?
+                        <svg class="w-4 h-4 text-gray-500 shrink-0 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </summary>
+                    <div class="px-4 pb-3 text-gray-600 text-sm border-t border-gray-100 pt-3">
+                        Если откликнулось — да. Тест не претендует на 100% точность и не заменяет работу с психологом. Но если ты читаешь описание и узнаёшь себя — это уже важный шаг. Дальше можно разбирать глубже.
+                    </div>
+                </details>
+                <details class="border rounded-lg">
+                    <summary class="px-4 py-3 font-medium cursor-pointer hover:bg-gray-50 transition-colors list-none flex items-center justify-between">
+                        Может ли тип меняться?
+                        <svg class="w-4 h-4 text-gray-500 shrink-0 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </summary>
+                    <div class="px-4 pb-3 text-gray-600 text-sm border-t border-gray-100 pt-3">
+                        Ядро остаётся, но защиты можно смягчать и менять. Ты не обязана всю жизнь быть удобной, терпеливой или правильной. С этим можно работать — и постепенно становиться «плохой девочкой», которая берёт от жизни максимум.
+                    </div>
+                </details>
+                <details class="border rounded-lg">
+                    <summary class="px-4 py-3 font-medium cursor-pointer hover:bg-gray-50 transition-colors list-none flex items-center justify-between">
+                        Что делать дальше?
+                        <svg class="w-4 h-4 text-gray-500 shrink-0 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </summary>
+                    <div class="px-4 pb-3 text-gray-600 text-sm border-t border-gray-100 pt-3">
+                        Сделай скрин своего результата и пришли мне в личные сообщения — я запишу для тебя персональный аудио-разбор: как твой тип проявляется в отношениях, жизни и реализации, какие защиты мешают тебе, и что с этим делать. Это бесплатно.
+                    </div>
+                </details>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ===================== ДАННЫЕ ТЕСТА =====================
+        const questions = [
+            { id: 1, text: 'Меня раздражает беспорядок и неопределённость, я люблю, когда всё под контролем.' },
+            { id: 2, text: 'Я часто замечаю, что люди могут иметь скрытые мотивы, и мне важно быть начеку.' },
+            { id: 3, text: 'После общения с людьми мне обязательно нужно побыть одному, чтобы восстановить силы.' },
+            { id: 4, text: 'Я часто чувствую, что недостаточно хорош(а) для чего-то или кого-то.' },
+            { id: 5, text: 'Когда я в центре внимания, я чувствую прилив энергии и оживаю.' },
+            { id: 6, text: 'Моё настроение и самооценка сильно зависят от успехов, признания или критики.' },
+            { id: 7, text: 'Правила созданы для того, чтобы их иногда нарушать, если это помогает достичь цели.' },
+            { id: 8, text: 'Я способен(на) долго терпеть неудобства, и иногда это даже даёт мне чувство морального превосходства.' },
+            { id: 9, text: 'Мне трудно усидеть на месте, я постоянно нахожусь в движении или придумываю новые дела.' },
+            { id: 10, text: 'Мои внутренние мысли и фантазии часто интереснее, чем события вокруг.' },
+            { id: 11, text: 'Я составляю списки, планирую дела и следую распорядку — это помогает мне чувствовать себя спокойно.' },
+            { id: 12, text: 'Мне трудно доверять людям с первого раза, я сначала проверяю их надёжность.' },
+            { id: 13, text: 'Комплименты смущают меня, мне проще принять конструктивную критику, чем похвалу.' },
+            { id: 14, text: 'Я выражаю эмоции ярко — жестами, мимикой, иногда это выглядит немного театрально.' },
+            { id: 15, text: 'Критика ранит меня очень глубоко и надолго, я могу долго переживать из-за неё.' },
+            { id: 16, text: 'Я редко испытываю угрызения совести или чувство вины за свои поступки.' },
+            { id: 17, text: 'Окружающие говорят, что я сам(а) виноват(а) в своих проблемах, но я с этим не согласен(на).' },
+            { id: 18, text: 'Я стараюсь избегать грустных мыслей, предпочитая сосредотачиваться на позитивном или отвлекаться на активность.' },
+            { id: 19, text: 'Для меня очень важно быть ответственным(ой) и выполнять свои обязательства.' },
+            { id: 20, text: 'В конфликтах я часто чувствую, что со мной поступают несправедливо.' },
+            { id: 21, text: 'Близкие отношения иногда ощущаются как посягательство на мою свободу и личное пространство.' },
+            { id: 22, text: 'Когда что-то идёт не так, моя первая мысль: «Что я сделал(а) не так?»' },
+            { id: 23, text: 'Я умею произвести нужное впечатление, когда этого требует ситуация.' },
+            { id: 24, text: 'Я часто сравниваю себя с другими — их достижениями, статусом, внешностью.' },
+            { id: 25, text: 'Мне нравится риск и необходимость быстро ориентироваться в сложных ситуациях.' }
+        ];
+
+        // Маппинг вопросов к типам
+        const typeMapping = {
+            'Параноидный': [1, 11, 19],
+            'Обсессивно-компульсивный': [0, 10, 18],
+            'Шизоидный': [2, 9, 20],
+            'Депрессивный': [3, 12, 21],
+            'Истерический': [4, 13, 22],
+            'Нарциссический': [5, 14, 23],
+            'Антисоциальный': [6, 15, 24],
+            'Мазохистический': [7, 16],
+            'Маниакальный': [8, 17]
+        };
+
+        // Новые названия типов
+        const newTypeNames = {
+            'Антисоциальный': 'Сильная девочка',
+            'Нарциссический': 'Идеальная девочка',
+            'Шизоидный': 'Девочка-невидимка',
+            'Параноидный': 'Девочка настороже',
+            'Депрессивный': 'Виноватая девочка',
+            'Маниакальный': 'Неутомимая девочка',
+            'Мазохистический': 'Терпеливая девочка',
+            'Обсессивно-компульсивный': 'Правильная девочка',
+            'Истерический': 'Удобная девочка'
+        };
+
+        // Клиническое название — для пометки под описанием
+        const clinicalLabel = {
+            'Антисоциальный': 'психопатическая / антисоциальная структура',
+            'Нарциссический': 'нарциссическая структура',
+            'Шизоидный': 'шизоидная структура',
+            'Параноидный': 'параноидная структура',
+            'Депрессивный': 'депрессивная структура',
+            'Маниакальный': 'маниакальная структура',
+            'Мазохистический': 'мазохистическая структура',
+            'Обсессивно-компульсивный': 'обсессивно-компульсивная структура',
+            'Истерический': 'истерическая / демонстративная структура'
+        };
+
+        // Эмодзи, подпись short и цвет шкалы для каждого типа
+        const typeDescriptions = {
+            'Параноидный': {
+                emoji: '🔍',
+                short: 'Бдительная и проницательная',
+                barColor: 'linear-gradient(90deg, #ef4444, #f97316)'
+            },
+            'Обсессивно-компульсивный': {
+                emoji: '📋',
+                short: 'Организованная и ответственная',
+                barColor: 'linear-gradient(90deg, #22c55e, #16a34a)'
+            },
+            'Шизоидный': {
+                emoji: '🌙',
+                short: 'Самодостаточная и глубокая',
+                barColor: 'linear-gradient(90deg, #a855f7, #ec4899)'
+            },
+            'Депрессивный': {
+                emoji: '💙',
+                short: 'Эмпатичная и самокритичная',
+                barColor: 'linear-gradient(90deg, #3b82f6, #6366f1)'
+            },
+            'Истерический': {
+                emoji: '🎭',
+                short: 'Эмоциональная и выразительная',
+                barColor: 'linear-gradient(90deg, #ec4899, #db2777)'
+            },
+            'Нарциссический': {
+                emoji: '⭐',
+                short: 'Фокус на достижениях и признании',
+                barColor: 'linear-gradient(90deg, #f59e0b, #ea580c)'
+            },
+            'Антисоциальный': {
+                emoji: '⚡',
+                short: 'Склонная к доминированию и контролю',
+                barColor: 'linear-gradient(90deg, #facc15, #f59e0b)'
+            },
+            'Мазохистический': {
+                emoji: '🎗️',
+                short: 'Выносливая и преданная',
+                barColor: 'linear-gradient(90deg, #64748b, #475569)'
+            },
+            'Маниакальный': {
+                emoji: '🔥',
+                short: 'Энергичная и жизнерадостная',
+                barColor: 'linear-gradient(90deg, #fb923c, #ef4444)'
+            }
+        };
+
+        // Краткое описание типа (3-5 предложений) — показывается только для ведущего типа
+        const shortDescriptions = {
+            'Антисоциальный': 'Ты привыкла справляться со всем сама — и не умеешь просить, потому что когда-то поняла: показать слабость опасно. Снаружи ты говоришь «всё нормально, я сильная», а внутри копится усталость и страх, что если расслабишься — тебя используют. Ты держишь всё под контролем, но это не про силу, а про защиту: когда-то доверять было действительно опасно. Ты не холодная — ты просто очень рано научилась не показывать, что тебе больно. И с этим можно работать: твоя сила станет настоящей, когда перестанет быть бронёй.',
+            'Нарциссический': 'Ты не можешь позволить себе быть неидеальной — потому что в детстве тебя любили за достижения, а не просто так. Ты держишь планку, боишься ошибиться и даже близким страшно показать настоящую себя: вдруг увидят, что ты не такая блестящая, и отвернутся. Ты сравниваешь себя со всеми, и часто проигрываешь — даже когда объективно всё отлично. Внутри живёт стыд и ощущение «я недостаточно», а снаружи — глянцевый фасад, который стоит тебе огромных сил. Это не про гордыню — это про страх, что тебя можно любить только идеальную. И с этим можно работать: ты имеешь право быть обычной — и всё равно любимой.',
+            'Шизоидный': 'Ты любишь людей, но быстро от них устаёшь — и стыдишься этого, потому что «нормальные женщины так не чувствуют». Как только кто-то подходит слишком близко, хочется спрятаться: не потому что не любишь, а потому что боишься раствориться и потерять себя. Ты ищешь близости — и одновременно от неё убегаешь, потому что когда-то контакт либо душил, либо ранил. Внутри у тебя богатый мир, но снаружи ты держишь дистанцию и часто чувствуешь себя «странной». Ты не холодная и не отстранённая — ты просто очень хорошо научилась защищать своё пространство. И с этим можно работать: близость может быть безопасной, если научиться дозировать её без паники.',
+            'Параноидный': 'Ты всё время ждёшь подвоха — даже от тех, кто искренне к тебе добр. Ты перечитываешь сообщения, ищешь скрытый смысл, вспоминаешь старые обиды и не можешь расслабиться: где-то в глубине живёт уверенность, что если отвернёшься — тебя обязательно обманут. Доверять тебе страшно, потому что когда-то доверие было растоптано — предательством, критикой или унижением. Ты постоянно начеку, и это выматывает: даже в спокойствии ты не находишь покоя. Ты не параноик и не «сложная» — ты просто очень хорошо научилась защищаться от боли. И с этим можно работать: доверие можно возвращать постепенно, без риска снова обжечься.',
+            'Депрессивный': 'Ты извиняешься первой, даже когда не виновата, и помнишь все свои ошибки, но забываешь достижения. Внутри живёт тихое «со мной что-то не так, и всё плохое в моей жизни — моя вина». Ты терпишь плохое обращение, потому что в глубине души уверена: «я заслужила», «я недостаточно хорошая». Тебе сложно принимать комплименты и подарки — как будто ты не имеешь на них права. Это не про слабость — это про то, что когда-то тебе пришлось взять на себя вину за чужую боль, чтобы сохранить любовь. И с этим можно работать: ты не виновата в том, в чём винишь себя всю жизнь.',
+            'Маниакальный': 'Ты всё время что-то делаешь — лишь бы не останавливаться, потому что в тишине становится невыносимо. «Всё хорошо!» — говоришь ты, даже когда внутри разваливается, потому что чувствовать это слишком больно. Ты не умеешь отдыхать, не умеешь грустить и не выносишь пауз: как только становится тихо, поднимается то, от чего ты бежишь всю жизнь. Ты заряжаешь других, но сама давно не помнишь, когда честно сказала «мне тяжело». Это не про энергию — это про защиту от боли, которую ты когда-то не смогла пережить. И с этим можно работать: в тишине можно не проваливаться, а дышать.',
+            'Мазохистический': 'Ты терпишь то, что терпеть нельзя, и спасаешь других, забывая о себе. Внутри — страх: если я перестану быть нужной и удобной, если выберу себя — меня бросят. Ты выбираешь сложных партнёров, вкладываешься до дна, а потом остаёшься одна с ощущением, что тебя использовали. Тебе проще болеть и уставать, чем сказать «со мной так нельзя» — потому что когда-то любовь приходила только через страдание. Ты не жертва по характеру — ты просто очень рано усвоила, что за тепло надо платить болью. И с этим можно работать: тебя можно любить просто так, без страданий в качестве платы.',
+            'Обсессивно-компульсивный': 'Ты всё делаешь «как надо» и не можешь расслабиться, пока не проконтролируешь всё до мелочей. Но сколько ни старайся — тревога не уходит: где-то внутри всё равно звучит «недостаточно хорошо, ты могла лучше». Ты боишься ошибиться, боишься хаоса и неопределённости, и часто живёшь в напряжении, которое не отпускает даже в отпуске. Люди рядом чувствуют себя с тобой стабильно — но иногда душно, а ты сама устала быть «взрослой, которая всё держит». Это не про жёсткость — это про защиту от катастрофы, которую ты когда-то пережила или боялась пережить. И с этим можно работать: можно ошибаться — и мир не рухнет.',
+            'Истерический': 'Ты делаешь себя маленькой, чтобы не затмевать других, и не занимаешь своё место, потому что «неудобно». Внутри — голод по вниманию и страх, что если ты будешь слишком — тебя отвергнут. Ты не знаешь, чего хочешь — знаешь, чего хотят другие, и часто обслуживаешь чужие эмоции, забывая о своих. Ты либо молчишь и терпишь, либо «взрываешься» — потому что по-другому просить внимания и заботы тебе не разрешали. Это не про капризы — это про страх, что твоё место в мире нужно заслужить. И с этим можно работать: ты имеешь право занимать место — и тебя не оставят.'
+        };
+
+        let state = {
+            currentQuestion: 0,
+            answers: new Array(questions.length).fill(null),
+            isComplete: false
+        };
+
+        // ===================== DOM ЭЛЕМЕНТЫ =====================
+        const questionSection = document.getElementById('question-section');
+        const resultsSection = document.getElementById('results-section');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercent = document.getElementById('progress-percent');
+        const questionCounter = document.getElementById('question-counter');
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const retakeBtn = document.getElementById('retake-btn');
+        // ===================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====================
+        function getOptionLabel(index) {
+            return ['Совсем не про меня', 'Редко про меня', 'Иногда про меня', 'Часто про меня', 'Очень точно про меня'][index];
+        }
+
+        function getOptionColor(index) {
+            const colors = [
+                'from-red-50 to-red-100 hover:from-red-100 hover:to-red-200',
+                'from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200',
+                'from-yellow-50 to-yellow-100 hover:from-yellow-100 hover:to-yellow-200',
+                'from-green-50 to-green-100 hover:from-green-100 hover:to-green-200',
+                'from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200'
+            ];
+            return colors[index] || 'from-gray-50 to-gray-100';
+        }
+
+        function updateProgress() {
+            const total = questions.length;
+            const answered = state.answers.filter(a => a !== null).length;
+            const percent = Math.round((answered / total) * 100);
+            progressBar.style.width = percent + '%';
+            progressPercent.textContent = percent + '%';
+            questionCounter.textContent = `Вопрос ${state.currentQuestion + 1} из ${total}`;
+        }
+
+        function renderQuestion() {
+            if (state.isComplete) return;
+
+            const q = questions[state.currentQuestion];
+            questionText.textContent = q.text;
+
+            optionsContainer.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const btn = document.createElement('button');
+                btn.className = `option-btn w-full text-left p-4 rounded-xl bg-gradient-to-r ${getOptionColor(i)} transition-all ${state.answers[state.currentQuestion] === i ? 'selected' : ''}`;
+                btn.textContent = getOptionLabel(i);
+                btn.dataset.value = i;
+                btn.addEventListener('click', () => selectOption(i));
+                optionsContainer.appendChild(btn);
+            }
+
+            prevBtn.disabled = state.currentQuestion === 0;
+            nextBtn.textContent = state.currentQuestion === questions.length - 1 ? '📊 Узнать результат' : 'Далее →';
+            nextBtn.disabled = state.answers[state.currentQuestion] === null;
+
+            updateProgress();
+            questionSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function selectOption(value) {
+            state.answers[state.currentQuestion] = value;
+            renderQuestion();
+        }
+
+        function goToNext() {
+            if (state.answers[state.currentQuestion] === null) return;
+
+            if (state.currentQuestion === questions.length - 1) {
+                showResults();
+            } else {
+                state.currentQuestion++;
+                renderQuestion();
+            }
+        }
+
+        function goToPrev() {
+            if (state.currentQuestion > 0) {
+                state.currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        // ===================== РАСЧЁТ РЕЗУЛЬТАТОВ =====================
+        function calculateResults() {
+            const scores = {};
+
+            for (const type in typeMapping) {
+                scores[type] = 0;
+            }
+
+            for (let i = 0; i < state.answers.length; i++) {
+                const answer = state.answers[i];
+                if (answer === 3 || answer === 4) {
+                    for (const type in typeMapping) {
+                        if (typeMapping[type].includes(i)) {
+                            scores[type] = (scores[type] || 0) + 1;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            let maxScore = 0;
+            let leadingType = null;
+            let allScores = [];
+
+            for (const type in scores) {
+                const score = scores[type];
+                const total = typeMapping[type].length;
+                const percent = Math.round((score / total) * 100);
+                allScores.push({ type, score, total, percent });
+                if (score > maxScore) {
+                    maxScore = score;
+                    leadingType = type;
+                }
+            }
+
+            allScores.sort((a, b) => b.percent - a.percent || b.score - a.score);
+
+            return { leadingType, maxScore, allScores, scores };
+        }
+
+        // ===================== ПОКАЗ РЕЗУЛЬТАТОВ =====================
+        function showResults() {
+            state.isComplete = true;
+            const results = calculateResults();
+
+            questionSection.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+
+            const content = document.getElementById('results-content');
+
+            if (!results.leadingType || results.maxScore === 0) {
+                content.innerHTML = `
+                    <div class="text-center py-8">
+                        <span class="text-4xl">🤔</span>
+                        <p class="text-gray-600 mt-3">Вы дали недостаточно чётких ответов (3–4 балла).</p>
+                        <p class="text-gray-500 text-sm">Попробуйте пройти тест ещё раз, отвечая более определённо.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const typeInfo = typeDescriptions[results.leadingType];
+            const leadingName = newTypeNames[results.leadingType] || results.leadingType;
+
+            // Профиль личности — все 9 типов, от сильного к слабому, у 0% вместо цифры «—»
+            const profileBarsHtml = results.allScores.map(({ type, percent }) => {
+                const info = typeDescriptions[type];
+                const displayName = newTypeNames[type] || type;
+                const percentLabel = percent > 0 ? percent + '%' : '—';
+                return `
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-gray-800 font-medium flex items-center gap-2">
+                                <span>${info?.emoji || '🔹'}</span> ${displayName}
+                            </span>
+                            <span class="text-gray-800 font-semibold">${percentLabel}</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-2.5">
+                            <div class="h-2.5 rounded-full" style="width: ${percent}%; background: ${info?.barColor || 'linear-gradient(90deg, #6366f1, #4f46e5)'}"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Краткое описание типа + пометка «В основе — …»
+            const shortText = shortDescriptions[results.leadingType] || '';
+            const clinical = clinicalLabel[results.leadingType] || '';
+
+            const shortDescHtml = `
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 mt-6">
+                    <p class="text-gray-700 leading-relaxed">${shortText}</p>
+                    <p class="text-gray-400 text-xs italic mt-4">В основе — ${clinical}. Тест не является диагностическим инструментом.</p>
+                </div>
+            `;
+
+            content.innerHTML = `
+                <div class="result-card text-center">
+                    <span class="text-6xl">⭐</span>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-3">Твой тип</h3>
+                    <div class="mt-3 inline-block">
+                        <span class="type-tag text-lg" style="background: ${typeInfo?.barColor || 'linear-gradient(90deg, #6366f1, #4f46e5)'}; color: white; padding: 8px 24px;">
+                            ${leadingName}
+                        </span>
+                    </div>
+                    <p class="text-gray-500 mt-2">${typeInfo?.short || ''}</p>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 mt-6">
+                    <h4 class="font-semibold text-gray-900 mb-4 flex items-center gap-2">📈 Профиль личности</h4>
+                    ${profileBarsHtml}
+                </div>
+
+                ${shortDescHtml}
+
+                <div class="mt-8 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-6 md:p-8 text-center">
+                    <h3 class="text-white text-xl md:text-2xl font-bold mb-3">📸 Забери свой аудио-разбор</h3>
+                    <p class="text-indigo-100 text-sm md:text-base mb-4 max-w-2xl mx-auto">
+                        Сделай скрин этого результата и пришли мне в личные сообщения — я запишу для тебя персональный аудио-разбор:
+                    </p>
+                    <ul class="text-indigo-100 text-sm md:text-base text-left max-w-xl mx-auto mb-6 space-y-2">
+                        <li>• как твой тип проявляется в отношениях, жизни и реализации</li>
+                        <li>• какие защиты мешают тебе стать «Плохой девочкой», которая берёт от жизни максимум</li>
+                        <li>• что с этим делать — конкретные шаги</li>
+                    </ul>
+                    <a href="https://t.me/katyayaman" target="_blank" rel="noopener noreferrer"
+                       class="inline-block px-8 py-3.5 bg-white text-indigo-700 font-semibold rounded-xl hover:bg-indigo-50 transition shadow-lg">
+                        📩 Отправить скрин Кате →
+                    </a>
+                    <p class="text-indigo-200 text-xs md:text-sm mt-4">
+                        Просто нажми — откроется чат, останется прикрепить скрин и отправить.
+                    </p>
+                </div>
+            `;
+
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ===================== СБРОС =====================
+        function resetTest() {
+            state.currentQuestion = 0;
+            state.answers = new Array(questions.length).fill(null);
+            state.isComplete = false;
+
+            resultsSection.classList.add('hidden');
+            questionSection.classList.remove('hidden');
+
+            renderQuestion();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ===================== СОБЫТИЯ =====================
+        nextBtn.addEventListener('click', goToNext);
+        prevBtn.addEventListener('click', goToPrev);
+        resetBtn.addEventListener('click', resetTest);
+        retakeBtn.addEventListener('click', resetTest);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'Enter') {
+                if (!nextBtn.disabled) goToNext();
+            }
+            if (e.key === 'ArrowLeft') {
+                if (!prevBtn.disabled) goToPrev();
+            }
+        });
+
+        // ===================== ЗАПУСК =====================
+        renderQuestion();
+
+        console.log('🙋‍♀️ Тест «9 типов хорошей девочки» загружен!');
+        console.log('📝 Всего вопросов:', questions.length);
+        console.log('📊 Типов:', Object.keys(typeMapping).length);
+    </script>
+
+</body>
+</html>
 
